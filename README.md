@@ -25,6 +25,8 @@ This is a **quantitative relative-value strategy** on the NYMEX Henry Hub natura
 
 We exploit those temporary dislocations. We are **not** forecasting where gas prices are going. We are forecasting **which maturities are rich or cheap relative to each other**, and trading that convergence.
 
+![Henry Hub Futures Term Structure through Time](output.png)
+
 
 ## Alpha Hypothesis
 
