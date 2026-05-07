@@ -1,6 +1,6 @@
 # Natural Gas Forward Curve — PCA Relative Value Strategy
 
-**Oxford Alpha Fund, University of Oxford — Team 1**  
+**Oxford Alpha Fund, University of Oxford**  
 *Project Manager: Solal Danan · Analyst: Shenghao Sun*
 
 ---
@@ -25,6 +25,12 @@ This is a **quantitative relative-value strategy** on the NYMEX Henry Hub natura
 
 We exploit those temporary dislocations. We are **not** forecasting where gas prices are going. We are forecasting **which maturities are rich or cheap relative to each other**, and trading that convergence.
 
+
+## Alpha Hypothesis
+
+Maturity-specific dislocations from the PCA-implied forward curve are partially predictable. These dislocations may become more predictable when storage constraints, weather shocks, and curve-state signals indicate stress in the natural gas market.
+
+
 ---
 
 ## The Core Idea in Three Steps
@@ -41,7 +47,7 @@ The three PCA factors capture ~95% of all curve moves (level, slope, curvature).
 
 ### 2. Predict which residuals will mean-revert
 
-We train an **XGBoost model** to predict the next 5-day cumulative residual return for each maturity, using three signal families:
+We train an **Machine Learning model** to predict the next 5-day cumulative residual return for each maturity, using three signal families:
 
 | Signal family | What it captures |
 |---|---|
@@ -87,6 +93,10 @@ where `σ_ε(i,t,63)` is the trailing 63-day standard deviation of daily residua
 - `y_z > 0` → maturity expected to outperform the factor-implied curve → long
 - `y_z < 0` → maturity expected to underperform → short
 
+**Why factor-neutralize the portfolio?**
+The target `y_z` is a residual — the P&L of a factor-neutral portfolio equals `w · y_raw` exactly. Without factor neutralization, PnL would also depend on factor returns, which are not what we're predicting.
+
+
 ### ML Training — Purged Walk-Forward CV
 
 The in-sample period (2013–2022) uses **purged walk-forward cross-validation** to select all model choices:
@@ -100,33 +110,7 @@ The in-sample period (2013–2022) uses **purged walk-forward cross-validation**
 
 All hyperparameters, feature sets, and portfolio rules were locked after in-sample selection. The **out-of-sample period (Jan 2022 – Mar 2026) was not touched during development**.
 
-### Portfolio Construction
 
-| Rule | Detail |
-|---|---|
-| Universe | M2–M12 (M1 excluded due to roll noise) |
-| Signal | Predicted `y_z` per maturity |
-| Book | Long top 4, short bottom 4 — equal-weighted |
-| Gross exposure | 1.0 (25% max per position) |
-| Neutralization | Dollar-neutral + neutralized to first 3 PCA factors |
-| Execution | Signal at close `t` → execute close `t+1` |
-| Sleeves | 5 overlapping sleeves averaged (holds 5-day positions) |
-| Transaction costs | 2 bps one-way |
-
----
-
-## Key Methodological Choices
-
-**Why PCA residuals, not spreads or butterflies?**  
-Spreads and butterflies are ad hoc constructions. PCA residuals are the mathematically correct decomposition: they are orthogonal to the common factor structure by construction, so a factor-neutral portfolio is built directly from the PCA framework.
-
-**Why XGBoost over linear models?**  
-Linear models (Ridge, Lasso) assume a symmetric response to storage levels. The storage-pricing relationship is asymmetric and non-linear: a storage draw matters more when inventories are near the 5-year low than when they are average. XGBoost captures this.
-
-**Why factor-neutralize the portfolio?**  
-The target `y_z` is a residual — the P&L of a factor-neutral portfolio equals `w · y_raw` exactly. Without factor neutralization, PnL would also depend on factor returns, which are not what we're predicting.
-
----
 
 ## Data Sources
 
