@@ -9,8 +9,8 @@
 
 **Winner — Oxford Alpha Fund Quant Pitch Competition (May 2026)**  
 Placed 1st out of 4 teams. Judged by:
-- **Dr. Eric Huang** — Portfolio Manager, Point72
-- **Siobhan Cooke** — Quantitative Risk Manager, Citi
+- Portfolio Manager, Point72
+- Quantitative Risk Manager, Citi
 
 > *Full implementation (code, notebooks, data pipeline, backtests) is in a private repository.  
 > DM or email if you'd like to discuss the strategy: **solal.danan@gmail.com***
